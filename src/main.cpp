@@ -2,17 +2,19 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESP32Servo.h>
+#include <main.h>
 
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
-int servoPin[5] = {1,2,3,4,5};
+void handleRoot();
+void handleUpdate();
 WebServer server(80);
 Servo servos[5];
 void setup() {
   Serial.begin(115200);
-  for (int i = 0; i < 5; i++) {
-    servos[i].attach(servoPin[0]);
-  }
+  servos[0].attach(s1);
+  servos[1].attach(s2);
+  servos[2].attach(s3);
+  servos[3].attach(s4);
+  servos[4].attach(s5);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -25,6 +27,10 @@ void setup() {
   server.on("/update", handleUpdate);
   server.begin();
   Serial.println("Web server started!");
+}
+
+void loop() {
+  server.handleClient();
 }
 
 void handleRoot() {
@@ -40,7 +46,4 @@ void handleUpdate() {
     servos[3].write(server.arg("servo4").toInt());
     servos[4].write(server.arg("servo5").toInt());
   }
-}
-void loop() {
-  server.handleClient();
 }
